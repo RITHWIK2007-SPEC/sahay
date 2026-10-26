@@ -57,7 +57,7 @@ th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);verti
 <button class="sm" id="tg">Theme</button>
 </div>
 <div class="tabs" role="tablist">
-<button class="tab" role="tab" data-t="assess" aria-selected="true">Survey</button>
+<button class="tab" role="tab" data-t="assess" aria-selected="true">+ Add Household</button>
 <button class="tab" role="tab" data-t="dash" aria-selected="false">Dashboard</button>
 <button class="tab" role="tab" data-t="audit" aria-selected="false">Audit log</button>
 <button class="tab" role="tab" data-t="schemes" aria-selected="false">Schemes</button>
@@ -67,7 +67,7 @@ th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);verti
 <div class="note" style="margin-top:16px">Prototype with 30 synthetic households. Sign-in is simulated, data lives only in this browser tab, and no real person’s data is used.</div>
 
 <section id="assess">
-<h2>Household survey</h2><p class="sub">Households are identified by an ID and ward only. No names, phone numbers or Aadhaar numbers are collected.</p>
+<h2>Add Household Assessment</h2><p class="sub">Households are identified by an ID and ward only. No names, phone numbers or Aadhaar numbers are collected.</p>
 <div class="panel"><div class="g">
 <div><label for="ward">Ward</label><select id="ward"><option>Ward 1</option><option>Ward 2</option><option>Ward 3</option><option>Ward 4</option></select></div>
 <div><label for="members">Family members</label><input id="members" type="number" min="1" value="5"></div>
@@ -79,7 +79,7 @@ th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);verti
 <div><label for="electricity">Electricity</label><select id="electricity"><option value="yes">Yes</option><option value="no">No</option></select></div>
 <div><label for="water">Clean water</label><select id="water"><option value="yes">Yes</option><option value="limited">Limited</option><option value="no">No</option></select></div>
 <div><label for="benefits">Any government benefit?</label><select id="benefits"><option value="yes">Yes</option><option value="no">No</option></select></div>
-</div><p><button class="btn" id="save">Save assessment</button></p></div>
+</div><p><button class="btn" id="save">+Add & Assess Household </button></p></div>
 <div class="panel hid" id="res"></div>
 </section>
 
