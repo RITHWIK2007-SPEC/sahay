@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sahay Console — field survey, officer review, audit trail</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6F8F6;--fg:#15231E;--muted:#55645E;--line:#D6DEDA;--panel:#fff;--accent:#0F5C5C;--accent-fg:#fff;--hi:#B3261E;--mid:#B7791F;--lo:#2E7D4F;--serif:"Newsreader",Georgia,serif;--sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1815;--fg:#E7EEEA;--muted:#9BAAA3;--line:#26372F;--panel:#14221D;--accent:#5FC2B4;--accent-fg:#06201C;--hi:#FF8A80;--mid:#E8B454;--lo:#6FCF97;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1815;--fg:#E7EEEA;--muted:#9BAAA3;--line:#26372F;--panel:#14221D;--accent:#5FC2B4;--accent-fg:#06201C;--hi:#FF8A80;--mid:#E8B454;--lo:#6FCF97;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.55;font-size:16px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--line);z-index:9}
+.bar1{display:flex;align-items:center;gap:14px;padding:10px 0;flex-wrap:wrap}
+.logo{font-family:var(--serif);font-size:24px;font-weight:600;margin-right:auto}
+.logo small{font-family:var(--sans);font-size:13px;color:var(--muted);font-weight:400;margin-left:8px}
+select,input,textarea,button{font:inherit;color:var(--fg)}
+select,input,textarea{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+button{cursor:pointer}
+.tabs{display:flex;gap:4px;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:8px 14px;color:var(--muted)}
+.tab[aria-selected="true"]{color:var(--fg);border-color:var(--accent);font-weight:600}
+.btn{background:var(--accent);color:var(--accent-fg);border:0;border-radius:6px;padding:10px 18px;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.sm{background:none;border:1px solid var(--line);border-radius:6px;padding:3px 10px;font-size:14px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h2{font-family:var(--serif);font-size:28px;margin:26px 0 6px;line-height:1.2}
+h3{font-family:var(--serif);font-size:20px;margin:0 0 6px}
+p.sub{color:var(--muted);margin:0 0 18px;max-width:44em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:18px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 14px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.tile{border-left:4px solid var(--line);padding:4px 12px}.tile b{font-family:var(--serif);font-size:30px;display:block;line-height:1.1}
+.tile.h{border-color:var(--hi)}.tile.m{border-color:var(--mid)}.tile.l{border-color:var(--lo)}
+.wr{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:14px}.wr span:first-child{width:60px}
+.stack{flex:1;display:flex;height:16px;border-radius:4px;overflow:hidden;background:var(--line)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.pill{font-weight:600}.High{color:var(--hi)}.Medium{color:var(--mid)}.Low{color:var(--lo)}
+.flag{font-size:12px;border:1px solid var(--mid);color:var(--mid);border-radius:10px;padding:0 7px;margin-left:6px;white-space:nowrap}
+.note{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--mid);padding:10px 14px;border-radius:6px;font-size:14px;color:var(--muted);margin-bottom:16px}
+.fill{height:12px;background:var(--line);border-radius:6px;overflow:hidden;margin:8px 0}.fill i{display:block;height:100%;transition:width .4s}
+.hid{display:none}ul{margin:4px 0 10px;padding-left:20px}
+@media (max-width:700px){.tiles{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="bar1">
+<div class="logo">Sahay<small>Console prototype</small></div>
+<div style="width:170px"><label for="role" style="margin:0">Signed in as (demo)</label><select id="role"><option value="worker">Field worker</option><option value="officer">District officer</option></select></div>
+<button class="sm" id="tg">Theme</button>
+</div>
+<div class="tabs" role="tablist">
+<button class="tab" role="tab" data-t="assess" aria-selected="true">Survey</button>
+<button class="tab" role="tab" data-t="dash" aria-selected="false">Dashboard</button>
+<button class="tab" role="tab" data-t="audit" aria-selected="false">Audit log</button>
+<button class="tab" role="tab" data-t="schemes" aria-selected="false">Schemes</button>
+</div></div></header>
+
+<main class="wrap">
+<div class="note" style="margin-top:16px">Prototype with 30 synthetic households. Sign-in is simulated, data lives only in this browser tab, and no real person’s data is used.</div>
+
+<section id="assess">
+<h2>Household survey</h2><p class="sub">Households are identified by an ID and ward only. No names, phone numbers or Aadhaar numbers are collected.</p>
+<div class="panel"><div class="g">
+<div><label for="ward">Ward</label><select id="ward"><option>Ward 1</option><option>Ward 2</option><option>Ward 3</option><option>Ward 4</option></select></div>
+<div><label for="members">Family members</label><input id="members" type="number" min="1" value="5"></div>
+<div><label for="earners">Earning members</label><input id="earners" type="number" min="0" value="1"></div>
+<div><label for="income">Monthly income (₹)</label><input id="income" type="number" min="0" value="8000"></div>
+<div><label for="children">Children under 18</label><input id="children" type="number" min="0" value="2"></div>
+<div><label for="education">Children’s schooling</label><select id="education"><option value="school">In school</option><option value="primary">Primary only</option><option value="none">Not in school</option></select></div>
+<div><label for="housing">Housing</label><select id="housing"><option value="own">Own</option><option value="rented">Rented</option><option value="temporary">Temporary</option></select></div>
+<div><label for="electricity">Electricity</label><select id="electricity"><option value="yes">Yes</option><option value="no">No</option></select></div>
+<div><label for="water">Clean water</label><select id="water"><option value="yes">Yes</option><option value="limited">Limited</option><option value="no">No</option></select></div>
+<div><label for="benefits">Any government benefit?</label><select id="benefits"><option value="yes">Yes</option><option value="no">No</option></select></div>
+</div><p><button class="btn" id="save">Save assessment</button></p></div>
+<div class="panel hid" id="res"></div>
+</section>
+
+<section id="dash" class="hid">
+<h2>District dashboard</h2><p class="sub">Counts use the officer-reviewed level where an override exists. Borderline cases sit within 4 points of a cut-off and deserve a second look.</p>
+<div class="tiles" id="tiles"></div>
+<div class="panel"><h3>Vulnerability by ward</h3><div id="wards"></div></div>
+<div class="panel"><div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap"><h3 style="margin:0;margin-right:auto">Households</h3><div style="width:160px"><label for="flt">Show</label><select id="flt"><option value="">All levels</option><option>High</option><option>Medium</option><option>Low</option><option value="B">Borderline only</option></select></div></div>
+<div class="tw"><table><thead><tr><th>ID</th><th>Ward</th><th>Level</th><th>Score</th><th>Main reason</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></div>
+<div class="panel hid" id="detail"></div>
+</section>
+
+<section id="audit" class="hid">
+<h2>Audit log</h2><p class="sub">Every officer override is recorded with who, when, what changed and why. Entries cannot be edited or deleted here.</p>
+<div class="panel"><div class="tw"><table><thead><tr><th>Time</th><th>Role</th><th>Household</th><th>Change</th><th>Reason</th></tr></thead><tbody id="arows"></tbody></table></div></div>
+</section>
+
+<section id="schemes" class="hid">
+<h2>Schemes to check</h2><p class="sub">Support areas from the assessment map to schemes worth verifying. Eligibility rules differ by state and change over time, so this prototype does not decide eligibility.</p>
+<div class="panel"><div class="tw"><table><thead><tr><th>Support area</th><th>Schemes to verify</th><th>Status</th></tr></thead><tbody>
+<tr><td>Food assistance</td><td>National Food Security Act ration entitlement</td><td>Rules not yet encoded</td></tr>
+<tr><td>Employment and skill programs</td><td>MGNREGA (rural), skill development programs</td><td>Rules not yet encoded</td></tr>
+<tr><td>Housing assistance</td><td>PM Awas Yojana</td><td>Rules not yet encoded</td></tr>
+<tr><td>Education support</td><td>Samagra Shiksha, state scholarship schemes</td><td>Rules not yet encoded</td></tr>
+<tr><td>Scheme eligibility check</td><td>Ayushman Bharat PM-JAY, state welfare portals</td><td>Rules not yet encoded</td></tr>
+</tbody></table></div><p class="sub" style="margin-top:12px">Next step: encode each scheme’s criteria from its official notification, with the source link stored beside every rule.</p></div>
+</section>
+</main>
+
+<script>
+var ids=["members","earners","income","children","education","housing","electricity","water","benefits"];
+var hh=[],audit=[],sel=null,role="worker";
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function assess(d){
+  var s=0,why=[],m=Math.max(1,+d.members),e=+d.earners,pp=+d.income/m,ch=+d.children;
+  if(pp<1500){s+=30;why.push("Very low income per person")}else if(pp<3000){s+=18;why.push("Low income per person")}else if(pp<5000){s+=8}
+  if(e===0){s+=15;why.push("No earning member")}else if(m/e>=4){s+=8;why.push("One earner supports many people")}
+  if(d.housing==="temporary"){s+=15;why.push("Temporary or unsafe housing")}else if(d.housing==="rented"){s+=5}
+  if(d.electricity==="no"){s+=8;why.push("No electricity")}
+  if(d.water==="no"){s+=12;why.push("No clean water")}else if(d.water==="limited"){s+=6;why.push("Limited clean water")}
+  if(ch>0&&d.education==="none"){s+=10;why.push("Children not in school")}else if(ch>0&&d.education==="primary"){s+=5;why.push("Children with primary schooling only")}
+  if(d.benefits==="no"&&s>=30){s+=10;why.push("Not receiving any government benefit")}
+  s=Math.min(s,100);
+  return {score:s,level:s>=60?"High":s>=30?"Medium":"Low",why:why,border:Math.abs(s-30)<=4||Math.abs(s-60)<=4};
+}
+function lvl(h){return h.over?h.over:h.r.level}
+var seed=7;function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
+function pick(a){return a[Math.floor(rnd()*a.length)]}
+function add(d,ward){var r=assess(d);var h={id:"H-"+String(hh.length+1).padStart(4,"0"),ward:ward,d:d,r:r,over:null};hh.push(h);return h}
+for(var i=0;i<30;i++){var m=2+Math.floor(rnd()*6);add({members:m,earners:Math.min(m,Math.floor(rnd()*3)),income:Math.round((2000+rnd()*16000)/500)*500,children:Math.min(m-1,Math.floor(rnd()*4)),education:pick(["school","primary","none"]),housing:pick(["own","rented","temporary"]),electricity:rnd()<.85?"yes":"no",water:pick(["yes","yes","limited","no"]),benefits:rnd()<.4?"yes":"no"},pick(["Ward 1","Ward 2","Ward 3","Ward 4"]))}
+
+function show(t){["assess","dash","audit","schemes"].forEach(function(x){document.getElementById(x).classList.toggle("hid",x!==t)});
+  document.querySelectorAll(".tab").forEach(function(b){b.setAttribute("aria-selected",b.dataset.t===t)});
+  if(t==="dash")renderDash();if(t==="audit")renderAudit()}
+document.querySelectorAll(".tab").forEach(function(b){b.onclick=function(){show(b.dataset.t)}});
+document.getElementById("role").onchange=function(){role=this.value;if(sel)openDetail(sel)};
+
+document.getElementById("save").onclick=function(){
+  var d={};ids.forEach(function(i){d[i]=document.getElementById(i).value});
+  var h=add(d,document.getElementById("ward").value),p=document.getElementById("res"),c=colr(h.r.level);
+  p.classList.remove("hid");
+  p.innerHTML='<h3>'+esc(h.id)+' saved: <span class="pill '+h.r.level+'">'+h.r.level+' vulnerability</span> ('+h.r.score+'/100)</h3><div class="fill"><i style="width:'+h.r.score+'%;background:'+c+'"></i></div><b>What drove this result</b><ul>'+(h.r.why.map(function(w){return "<li>"+esc(w)+"</li>"}).join("")||"<li>No major factors</li>")+"</ul>"+(h.r.border?'<p class="note">Borderline result. An officer should take a second look.</p>':"")+'<p class="sub">Indicative assessment only, not an official determination of poverty status.</p>';
+};
+function colr(l){return l==="High"?"var(--hi)":l==="Medium"?"var(--mid)":"var(--lo)"}
+
+function renderDash(){
+  var c={High:0,Medium:0,Low:0};hh.forEach(function(h){c[lvl(h)]++});
+  document.getElementById("tiles").innerHTML='<div class="tile"><b>'+hh.length+'</b>Households</div><div class="tile h"><b>'+c.High+'</b>High</div><div class="tile m"><b>'+c.Medium+'</b>Medium</div><div class="tile l"><b>'+c.Low+'</b>Low</div>';
+  document.getElementById("wards").innerHTML=["Ward 1","Ward 2","Ward 3","Ward 4"].map(function(w){
+    var x=hh.filter(function(h){return h.ward===w}),n=Math.max(1,x.length);
+    var seg=["High","Medium","Low"].map(function(l){var k=x.filter(function(h){return lvl(h)===l}).length;return '<i title="'+l+': '+k+'" style="width:'+(k/n*100)+'%;background:'+colr(l)+'"></i>'}).join("");
+    return '<div class="wr"><span>'+w+'</span><div class="stack">'+seg+'</div><span>'+x.length+'</span></div>'}).join("")+'<p class="sub" style="font-size:13px;margin:8px 0 0">Red is High, amber Medium, green Low. Hover a segment for its count.</p>';
+  var f=document.getElementById("flt").value;
+  var list=hh.filter(function(h){return !f||(f==="B"?h.r.border&&!h.over:lvl(h)===f)});
+  document.getElementById("rows").innerHTML=list.map(function(h){
+    return '<tr><td>'+h.id+'</td><td>'+h.ward+'</td><td><span class="pill '+lvl(h)+'">'+lvl(h)+'</span>'+(h.over?'<span class="flag">reviewed</span>':h.r.border?'<span class="flag">borderline</span>':"")+'</td><td>'+h.r.score+'</td><td>'+esc(h.r.why[0]||"None major")+'</td><td><button class="sm" data-id="'+h.id+'">Open</button></td></tr>'}).join("")||'<tr><td colspan="6">No households match this filter.</td></tr>';
+  document.querySelectorAll("#rows button").forEach(function(b){b.onclick=function(){openDetail(b.dataset.id)}});
+}
+document.getElementById("flt").onchange=renderDash;
+
+function openDetail(id){
+  sel=id;var h=hh.filter(function(x){return x.id===id})[0],p=document.getElementById("detail");p.classList.remove("hid");
+  var form=role==="officer"?'<h3 style="margin-top:14px">Override level</h3><div class="g"><div><label for="ol">New level</label><select id="ol"><option>High</option><option>Medium</option><option>Low</option></select></div></div><label for="or" style="margin-top:10px">Reason (required)</label><textarea id="or" rows="2"></textarea><p><button class="btn" id="apply">Record override</button> <span id="err" class="High"></span></p>':'<p class="note">Only a district officer can override a level. Switch the demo role at the top to try it.</p>';
+  p.innerHTML='<h3>'+h.id+' · '+h.ward+' · <span class="pill '+lvl(h)+'">'+lvl(h)+'</span> (system: '+h.r.level+', '+h.r.score+'/100)</h3><b>System reasons</b><ul>'+(h.r.why.map(function(w){return "<li>"+esc(w)+"</li>"}).join("")||"<li>No major factors</li>")+'</ul>'+form;
+  p.scrollIntoView({behavior:"smooth",block:"nearest"});
+  var ap=document.getElementById("apply");if(ap)ap.onclick=function(){
+    var r=document.getElementById("or").value.trim(),to=document.getElementById("ol").value;
+    if(r.length<10){document.getElementById("err").textContent="Enter a reason of at least 10 characters.";return}
+    audit.unshift({t:new Date().toLocaleString(),role:"District officer",id:h.id,from:lvl(h),to:to,why:r});h.over=to===h.r.level?null:to;
+    renderDash();openDetail(id)};
+}
+function renderAudit(){
+  document.getElementById("arows").innerHTML=audit.map(function(a){return '<tr><td>'+esc(a.t)+'</td><td>'+a.role+'</td><td>'+a.id+'</td><td>'+a.from+' → '+a.to+'</td><td>'+esc(a.why)+'</td></tr>'}).join("")||'<tr><td colspan="5">No overrides yet. Open a household on the Dashboard as an officer and record one.</td></tr>';
+}
+document.getElementById("tg").onclick=function(){var r=document.documentElement,d=r.getAttribute("data-theme")==="dark"||(!r.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches);r.setAttribute("data-theme",d?"light":"dark")};
+</script>
+</body>
+</html>
